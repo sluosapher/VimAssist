@@ -3,6 +3,7 @@ import os
 import json
 
 config_file_name = 'config.json'
+# config_file_name = 'config-test.json'
 
 def list_files_in_directory(directory:str)->list[str]:
     """

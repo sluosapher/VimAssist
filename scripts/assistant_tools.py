@@ -16,10 +16,9 @@ model = "gpt-4-turbo-preview"
 def create_assistant(assistant_name:str)->str:
     assistant = client.beta.assistants.create(
         instructions="""
-            You are a research assistant. 
-            You answer user's questions using the knowledge from attached documents.
-            Do not answer questions that are not relevant to attached documents.
-            Do not use context from conversation history to generate answers.
+            You are a research assistant with fabulous writing skills.
+
+            You answer user's questions by searching from the attached documents, and organize the information into a well-written response. 
         """,
         name=assistant_name,
         tools= tools,

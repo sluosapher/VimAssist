@@ -98,6 +98,7 @@ def send_message_to_assistant(message:str, config_dir:str)->str:
     thread_id = util.read_configurations(config_file_path)['thread_id']
 
     # send the message to the assistant
+    message = 'Search attached documents, ' + message # force the assistant to search the attached documents
     status, answer = assistant_tools.sendMessage(assistant_id, thread_id, message)
 
     # print the answer to the console if successful
