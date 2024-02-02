@@ -45,7 +45,4 @@ def compare_path_with_working_dir(path:str, config_file_path:str):
         return False
 
 if __name__ == "__main__":
-    # read configurations from the config file
-    config_data = read_configurations(script_path="/Users/sluo/development/vim-plugin/chatdocu/scripts")
-    print(config_data)
-
+    pass

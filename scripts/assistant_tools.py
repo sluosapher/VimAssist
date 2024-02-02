@@ -199,21 +199,5 @@ def sendMessage(assistantId, threadId, message:str)->tuple[int, str]:
 
 
 if __name__ == "__main__":
-    config_file_path = "/Users/sluo/development/vim-plugin/chatdocu/scripts/config.json"
-
-    # read assistant id and thread id from the config file, using function from utilities
-    assistant_id = util.read_configurations(config_file_path)['assistant_id']
-    thread_id = util.read_configurations(config_file_path)['thread_id']
-
-    # user message
-    message = "list song luo's all professional positions since 2006"
-
-    # send the message to the assistant
-    status, answer = sendMessage(assistant_id, thread_id, message)
-
-    # print the answer to the console if successful
-    if status == 0:
-        print(answer)
-    else:
-        print(f"Failed to get answer: {answer}")
+    pass
     

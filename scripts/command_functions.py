@@ -108,15 +108,7 @@ def send_message_to_assistant(message:str, config_dir:str)->str:
         return ""
         
 if __name__ == "__main__":
-    # # get the current directory
-    # dir = "/Users/sluo/tmp"
-    # update_docs(dir)
-
-    # send a message to the assistant
-    message = "What is the capital of China?"
-
-    answer = send_message_to_assistant(message)
-    print(answer)
+    pass
 
 
 
