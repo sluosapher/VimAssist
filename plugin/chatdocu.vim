@@ -12,6 +12,6 @@ endif
 let g:loaded_chatdocu = 1
 
 " Exposes the plugin's functions for use as commands in Vim.
-command! -nargs=+ Ask call chatdocu#Ask(<f-args>)
+command! Ask call chatdocu#Ask()
 command! Hello call chatdocu#PrintHello()
 command! Updatedocs call chatdocu#UpdateDocs()

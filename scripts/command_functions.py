@@ -86,6 +86,11 @@ def send_message_to_assistant(message:str, config_dir:str)->str:
         str: The answer from the assistant.
     """
 
+    # check if message is empty
+    if message == "":
+        print("Message is empty.")
+        return ""
+
     config_file_path = os.path.join(config_dir, util.config_file_name)
 
     # read assistant id and thread id from the config file, using function from utilities

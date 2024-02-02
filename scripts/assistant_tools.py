@@ -206,7 +206,7 @@ if __name__ == "__main__":
     thread_id = util.read_configurations(config_file_path)['thread_id']
 
     # user message
-    message = "What is the capital of France?"
+    message = "list song luo's all professional positions since 2006"
 
     # send the message to the assistant
     status, answer = sendMessage(assistant_id, thread_id, message)

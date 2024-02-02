@@ -2,9 +2,8 @@ let s:source_dir = fnamemodify(expand('<sfile>:p'), ':h')
 "echo s:source_dir
 
 " define the Ask funcntion
-function! chatdocu#Ask(...)
-    let args = join(a:000, " ")
-    let question = args
+function! chatdocu#Ask()
+    let question = input('Please enter your question: ')
 
 python3 << EOF
 import vim
@@ -20,18 +19,22 @@ import command_functions as cf
 from utilities import config_file_name
 
 question = vim.eval('question')
-answer = cf.send_message_to_assistant(question, config_dir=script_dir)
+if question == "":
+    print("Question is empty.")
+else:
 
-cursor = vim.current.window.cursor
-answer_lines = answer.split('\n')
+    answer = cf.send_message_to_assistant(question, config_dir=script_dir)
 
-# Start appending from the first line of the answer
-for i, line in enumerate(answer_lines):
-    vim.current.buffer.append(line, cursor[0] + i)
+    cursor = vim.current.window.cursor
+    answer_lines = answer.split('\n')
 
-end_line = cursor[0] + len(answer_lines)
-vim.command('normal! ' + str(cursor[0]) + 'GV' + str(end_line) + 'G')
-vim.current.window.cursor = (end_line, len(answer_lines[-1]))
+    # Start appending from the first line of the answer
+    for i, line in enumerate(answer_lines):
+        vim.current.buffer.append(line, cursor[0] + i)
+
+    end_line = cursor[0] + len(answer_lines)
+    vim.command('normal! ' + str(cursor[0]) + 'GV' + str(end_line) + 'G')
+    vim.current.window.cursor = (end_line, len(answer_lines[-1]))
 EOF
 endfunction
 
