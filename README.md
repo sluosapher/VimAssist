@@ -10,5 +10,111 @@ The `:Ask` command is used to ask a question and insert the answer into the docu
 ## Updatedocs command
 The `:Updatedocs` command is used to update the documents in the knowledge base used by AI. When user executes this command, the plugin will confirm with the user to using the documents in the folder where VIM is launched. User has the option to choose another folder. With proper mapping configuration, the user can use the shortct `\u` to launch the `:Updatedocs` command.
 
+## Showdocs command
+
+The `:Showdocs` command is used to display all the file names in the knowledge base, which are currently used by AI. With proper mapping configuration, the user can use the shortct `\s` to launch the `:Showdocs` command.
+
+# Installation
+
+NOTE: I use Mac, and all the installation steps are verified on Mac. If you are using Windows or Linux, you may need to modify the installation steps.
+
+## Step 1: Install Python3
+You can use brew to install Python3 of specific version. During my installation, I found the MacOS installed Python3.9 by default, but it did not work with VIM. Instead, I need to install Python3.12 to make the whole thing work. Again, this may only be the case for Mac.
+
+`
+brew install Python@3.12
+`
+
+## Step 2: Install VIM
+On Mac, you can install VIM using Homebrew:
+`
+brew install vim
+`
+
+## Step 3 (**IMPORTANT**): Check the if vim supports python3
+You can check if your vim supports python3 by running the following command in vim:
+`
+:echo has('python3')
+`
+
+If the result is 1, then your vim supports python3. If the result is 0, then you need to install a new vim that supports python3.
+
+## Step 4: check the linked python3 version, make sure you system installed the version that linked to vim
+You can check the linked python3 version by running the following command in OS terminal:
+`
+vim --version | grep python3
+`
+
+## Step 5: Install the plugin manager for VIM
+Follow the instruction on its github page: https://github.com/junegunn/vim-plug
+
+## Step 6: Install the VimAssist plugin
+Excute following commands in your terminal:
+`
+mkdir -p  ~/.vim/pack/vimassist/start/VimAssist
+git clone https://github.com/sluosapher/VimAssist.git ~/.vim/pack/vimassist/start/VimAssist
+`
+This will install the plugin source code into the folder `~/.vim/pack/vimassist/start/VimAssist`, which will be recognized by the plugin manager.
+
+## Step 7: Update the ~/.vimrc file
+First, make sure you update the `~/.vimrc` as instructed in step 5.
+Then, add the following lines to the `~/.vimrc` file, after the `call plug#begin()` line, and before the `call plug#end()` line:
+`
+Plug 'vimassist/VimAssist'
+`
+## Step 8: Mapping the shortcuts
+Add the following lines to the `~/.vimrc` file, after the `call plug#end()` line:
+`
+" map shortcut <leader>a in both normal mode and visual mode to the Ask command of chatdocu plugin
+nnoremap <leader>a :call vimassist#Ask()<CR>
+vnoremap <leader>a :call vimassist#Ask()<CR>
+
+" map shortcut <leader>u in both normal mode and visual mode to the UpdateDocs
+" function
+nnoremap <leader>u :call vimassist#UpdateDocs()<CR>
+vnoremap <leader>u :call vimassist#UpdateDocs()<CR>
+
+" map shortcut <leader>s in both normal mode and visual mode to the ShowDocs
+" function
+nnoremap <leader>s :call vimassist#ShowDocs()<CR>
+vnoremap <leader>s :call vimassist#ShowDocs()<CR>
+`
+
+I have provided a example of the configuration in the file `scripts/vimrc.example`, which you can use as a reference.
+
+## Step 9: Save the `~/.vimrc` file and restart VIM
+After you save the `~/.vimrc` file, you need to restart VIM to make the changes effective.
+
+# Usage
+
+## Prepare the OPenAI API key
+You need to prepare the OpenAI API key to use the plugin. You can get the API key from the OpenAI website. After you get the API key, you need to save it as an environment variable `OPENAI_API_KEY`. You can do this by adding the following line to your `~/.bash_profile` file:
+`
+export OPENAI_API_KEY="your_api_key"
+`
+
+Don't forget to source the `~/.bash_profile` file after you make the change:
+`
+source ~/.bash_profile
+`
+
+## Prepare the knowledge base
+VimAssist provides three commands: `:Ask`, `:Updatedocs`, and `:Showdocs`. You can use the shortcuts `\a`, `\u`, and `\s` to launch the commands, respectively.
+
+The plugin is supposed to work on a knowledge base, which is a folder containing all the documents that you want to use to generate the answer. 
+
+The first thing you need to do is to collect all the document files you will need for you writing, and save them into a specific folder. This is folder and its content is  the knowledge base. 
+
+## Use the `:Updatedocs` command
+After you prepared the knowledge base, you can launch the `:Updatedocs` command (shortcut `\u`) in vim to tell the plugin to use the documents in the knowledge base. It will basically create an OpenAI assistant, and attach the files in the folder to the assistant.
+
+## Use the `:Ask` and `:Showdocs` commands
+After you use the `:Updatedocs` command, you can use the `:Ask` command (shortcut `\a`) to ask a question and insert the answer into the document. You can also use the `:Showdocs` command (shortcut `\s`) to display all the file names in the knowledge base, which are currently used by AI.
+
+# License
+Apache License 2.0
+
+
+
 
 
