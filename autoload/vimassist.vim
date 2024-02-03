@@ -2,7 +2,7 @@ let s:source_dir = fnamemodify(expand('<sfile>:p'), ':h')
 "echo s:source_dir
 
 " define the Ask funcntion
-function! chatdocu#Ask()
+function! vimassist#Ask()
     let question = input('Please enter your question: ')
 
 python3 << EOF
@@ -39,7 +39,7 @@ EOF
 endfunction
 
 " define the UpdateDocs function
-function! chatdocu#UpdateDocs()
+function! vimassist#UpdateDocs()
 " get the full directory path of the current file, using vimscript
 let s:doc_dir = expand('%:p:h')
 
@@ -84,7 +84,7 @@ endfunction
 
 
 
-function! chatdocu#PrintHello()
+function! vimassist#PrintHello()
 " define the PrintHello function
 echo "PrintHello function called"
 echo s:script_dir
