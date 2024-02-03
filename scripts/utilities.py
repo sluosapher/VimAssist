@@ -36,11 +36,11 @@ def write_configurations(config_file_path, config_data):
     with open(config_file_path, 'w') as file:
         json.dump(config_data, file, indent=4)
 
-# define a function to compare a given path string with the working_dir in the config file
-def compare_path_with_working_dir(path:str, config_file_path:str):
+# define a function to compare a given path string with the doc_dir in the config file
+def compare_path_with_doc_dir(path:str, config_file_path:str):
     config_data = read_configurations(config_file_path)
-    working_dir = config_data['working_dir']
-    if path==working_dir:
+    doc_dir = config_data['doc_dir']
+    if path==doc_dir:
         return True
     else:
         return False

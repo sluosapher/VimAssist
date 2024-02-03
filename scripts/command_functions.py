@@ -4,12 +4,12 @@ import assistant_tools
 import utilities as util
 
 
-def update_docs(working_dir:str, config_dir:str)->int:
+def update_docs(doc_dir:str, config_dir:str)->int:
     """
     Add all files in the working directory to the assistant.
 
     Args:
-        working_dir (str): The path of the working directory.
+        doc_dir (str): The path of the working directory.
 
     Returns:
         int: 0 if successful, -1 if failed.
@@ -19,7 +19,7 @@ def update_docs(working_dir:str, config_dir:str)->int:
     config_data = util.read_configurations(config_file_path)
 
     # update the working directory in the config file
-    config_data['working_dir'] = working_dir
+    config_data['doc_dir'] = doc_dir
     util.write_configurations(config_file_path, config_data)
 
     # create a new assistant if not exist
@@ -49,7 +49,7 @@ def update_docs(working_dir:str, config_dir:str)->int:
         thread_id = config_data['thread_id']
 
     # list all files in the working directory
-    file_list = util.list_files_in_directory(working_dir)
+    file_list = util.list_files_in_directory(doc_dir)
     # print(f"Found {len(file_list)} files in the working directory.")
 
     # create file objects in openai
@@ -107,6 +107,27 @@ def send_message_to_assistant(message:str, config_dir:str)->str:
     else:
         print(f"Failed to get answer: {answer}")
         return ""
+    
+# define a function to print out all file names in the knowledge base, using function from assistant_tools
+def print_all_file_names(config_dir:str):
+    """
+    Print all file names in the knowledge base.
+
+    Args:
+        config_dir (str): The path of the config directory.
+    """
+    config_file_path = os.path.join(config_dir, util.config_file_name)
+
+    # read 
+    
+    # read assistant id from the config file
+    assistant_id = util.read_configurations(config_file_path)['assistant_id']
+    file_name_list = assistant_tools.get_all_file_names(assistant_id)
+
+
+    print("The assistant has the following documents:")
+    for file_name in file_name_list:
+        print(file_name)
         
 if __name__ == "__main__":
     pass
