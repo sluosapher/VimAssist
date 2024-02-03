@@ -1,0 +1,24 @@
+" This is an example of ~/.vimrc file, demonstrate configurations for the VimAssist plugin
+
+call plug#begin('~/.vim/plugged')
+
+" Using the VimAssist plugin
+" IMPORTANT: change it to the path where you save the plugin source code
+Plug '/Users/user123/vim-plugin/vimassist' 
+
+call plug#end()
+
+" map shortcut <leader>a in both normal mode and visual mode to the Ask command of chatdocu plugin
+nnoremap <leader>a :call vimassist#Ask()<CR>
+vnoremap <leader>a :call vimassist#Ask()<CR>
+
+" map shortcut <leader>u in both normal mode and visual mode to the UpdateDocs
+" function
+nnoremap <leader>u :call vimassist#UpdateDocs()<CR>
+vnoremap <leader>u :call vimassist#UpdateDocs()<CR>
+
+" map shortcut <leader>s in both normal mode and visual mode to the ShowDocs
+" function
+nnoremap <leader>s :call vimassist#ShowDocs()<CR>
+vnoremap <leader>s :call vimassist#ShowDocs()<CR>
+

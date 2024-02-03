@@ -118,19 +118,24 @@ def print_all_file_names(config_dir:str):
     """
     config_file_path = os.path.join(config_dir, util.config_file_name)
 
-    # read 
+    # read doc dir from the config file
+    doc_dir = util.read_configurations(config_file_path)['doc_dir']
     
     # read assistant id from the config file
     assistant_id = util.read_configurations(config_file_path)['assistant_id']
     file_name_list = assistant_tools.get_all_file_names(assistant_id)
 
+    # concantenate the doc dir to the file name
+    file_name_list = [os.path.join(doc_dir, file_name) for file_name in file_name_list]
 
-    print("The assistant has the following documents:")
+    print("The following documents are in the knowledge base:")
     for file_name in file_name_list:
         print(file_name)
         
 if __name__ == "__main__":
-    pass
+    # test the function print_all_file_names
+    print_all_file_names("/Users/sluo/development/vim-plugin/vimassist/scripts")
+
 
 
 

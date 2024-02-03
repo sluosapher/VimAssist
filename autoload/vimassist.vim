@@ -82,8 +82,24 @@ else:
 EOF
 endfunction
 
+" define the PrintDocs function
+function! vimassist#ShowDocs()
+" call the python function to print the documentation
+python3 << EOF
+import vim
+import os
+# add script directory to the python path
+source_dir = vim.eval('s:source_dir')
+script_dir = os.path.join(source_dir, '../scripts')
+sys.path.insert(0, script_dir)
+
+import command_functions as cf
+cf.print_all_file_names(config_dir=script_dir)
+EOF
+endfunction
 
 
+" A testing function, just print hello
 function! vimassist#PrintHello()
 " define the PrintHello function
 echo "PrintHello function called"
