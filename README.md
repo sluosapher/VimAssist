@@ -24,7 +24,7 @@ You can use brew to install Python3 of specific version. During my installation,
 `
 brew install Python@3.12
 `
-
+ 
 ## Step 2: Install VIM
 On Mac, you can install VIM using Homebrew:
 `
@@ -56,13 +56,20 @@ git clone https://github.com/sluosapher/VimAssist.git ~/.vim/pack/vimassist/star
 `
 This will install the plugin source code into the folder `~/.vim/pack/vimassist/start/VimAssist`, which will be recognized by the plugin manager.
 
-## Step 7: Update the ~/.vimrc file
+## Step 7: Install python dependencies
+You need to install the needed python packages.
+**IMPORTANT**: You must use the correct version pip to install the packages. For exmaple, if you are using Python3.12, you need to use pip3.12 to install the packages.
+`
+pip3.12 install -r ~/.vim/pack/vimassist/start/VimAssist/scripts/python_requirements.txt 
+`
+
+## Step 8: Update the ~/.vimrc file
 First, make sure you update the `~/.vimrc` as instructed in step 5.
 Then, add the following lines to the `~/.vimrc` file, after the `call plug#begin()` line, and before the `call plug#end()` line:
 `
 Plug 'vimassist/VimAssist'
 `
-## Step 8: Mapping the shortcuts
+## Step 9: Mapping the shortcuts
 Add the following lines to the `~/.vimrc` file, after the `call plug#end()` line:
 `
 " map shortcut <leader>a in both normal mode and visual mode to the Ask command of chatdocu plugin
@@ -82,7 +89,7 @@ vnoremap <leader>s :call vimassist#ShowDocs()<CR>
 
 I have provided a example of the configuration in the file `scripts/vimrc.example`, which you can use as a reference.
 
-## Step 9: Save the `~/.vimrc` file and restart VIM
+## Step 10: Save the `~/.vimrc` file and restart VIM
 After you save the `~/.vimrc` file, you need to restart VIM to make the changes effective.
 
 # Usage
