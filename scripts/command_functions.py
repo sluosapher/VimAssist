@@ -25,7 +25,7 @@ def update_docs(doc_dir:str, config_dir:str)->int:
     # create a new assistant if not exist
     if 'assistant_id' not in config_data or config_data['assistant_id'] == "":
         try:
-            assistant_id = assistant_tools.create_assistant("My Writting Assistant")
+            assistant_id = assistant_tools.create_assistant("VimAssist")
             # print(f"Created a new assistant with ID {assistant_id}.")
             config_data['assistant_id'] = assistant_id
             util.write_configurations(config_file_path, config_data)
@@ -34,6 +34,17 @@ def update_docs(doc_dir:str, config_dir:str)->int:
             return -1
     else:
         assistant_id = config_data['assistant_id']
+
+    # delete the old thread if exist
+    if 'thread_id' in config_data and config_data['thread_id'] != "":
+        try:
+            assistant_tools.delete_thread(config_data['thread_id'])
+            # print(f"Deleted the old thread with ID {config_data['thread_id']}.")
+        except Exception as e:
+            print(e) # if failed to delete the old thread, we continue to create a new thread
+        
+    config_data['thread_id'] = ""
+    util.write_configurations(config_file_path, config_data)
 
     # create a new thread if not exist
     if 'thread_id' not in config_data or config_data['thread_id'] == "":

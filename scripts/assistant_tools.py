@@ -126,6 +126,10 @@ def create_thread()->str:
     thread = client.beta.threads.create()
     return thread.id
 
+# delete a thread object in openai.
+def delete_thread(thread_id:str):
+    client.beta.threads.delete(thread_id)
+
 # define a function to send a message to the assistant, return status and answer
 def sendMessage(assistantId, threadId, message:str)->tuple[int, str]:
     # check if the assistant is set
