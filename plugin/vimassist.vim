@@ -15,4 +15,13 @@ let g:loaded_vimassist = 1
 command! Ask call vimassist#Ask() " Ask the user a question.
 command! Updatedocs call vimassit#UpdateDocs() " Update the plugin's knowledge base.
 command! Showdocs call vimassist#ShowDocs() " Display the plugin's document file names in its knowledge base.
-command! Hello call vimassist#PrintHello()
+" command! Hello call vimassist#PrintHello()
+
+" testing
+command! ShowSelection call vimassist#GetSelection() " Display the selected text.
+
+command! TopText call vimassist#GetTextAtTop() " Display the text before the selected text.
+
+command! BottomText call vimassist#GetTextAtBottom() " Display the text after the selected text.
+
+

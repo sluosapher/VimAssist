@@ -14,8 +14,12 @@ def update_docs(doc_dir:str, config_dir:str)->int:
     Returns:
         int: 0 if successful, -1 if failed.
     """
-    # read the config file
+    # check if config file exists. Create one if not exist
     config_file_path = os.path.join(config_dir, util.config_file_name)
+    if not os.path.exists(config_file_path):
+        util.create_configurations(config_dir)
+
+    # read the config file
     config_data = util.read_configurations(config_file_path)
 
     # update the working directory in the config file
@@ -33,6 +37,24 @@ def update_docs(doc_dir:str, config_dir:str)->int:
             print(e)
             return -1
     else:
+        # try retrieve the assistant from openai
+        assistant_id = config_data['assistant_id']
+        assistant = assistant_tools.retrieve_assistant(assistant_id)
+        if assistant is None:
+            print(f"Failed to retrieve the assistant with ID {assistant_id}. Creating a new assistant.")
+            # create a new assistant if failed to retrieve the old one
+            assistant_id = assistant_tools.create_assistant("VimAssist")
+            if assistant_id is None:
+                return -1
+            print(f"Created a new assistant with ID {assistant_id}.")
+            config_data['assistant_id'] = assistant_id
+
+            # write the new assistant id to the config file
+            util.write_configurations(config_file_path, config_data)
+        else:
+            pass
+
+
         assistant_id = config_data['assistant_id']
 
     # delete the old thread if exist
@@ -142,10 +164,33 @@ def print_all_file_names(config_dir:str):
     print("The following documents are in the knowledge base:")
     for file_name in file_name_list:
         print(file_name)
-        
+
+# define a function to revise the content being edited in vim, return generated text. using function from assistant_tools
+def revise_content(
+        config_dir:str, 
+        selected_text:str,
+        text_at_top:str,
+        text_at_bottom:str,
+        user_request:str
+        )->str:
+    """
+    Revise the content being edited in vim.
+
+    """
+    config_file_path = os.path.join(config_dir, util.config_file_name)
+
+    # call the revise_content function from assistant_tools
+    revised_text = assistant_tools.revise_content(
+        selected_text=selected_text,
+        text_before_selection=text_at_top,
+        text_after_selection=text_at_bottom,
+        user_request=user_request,
+    )
+
+    return revised_text
+    
 if __name__ == "__main__":
-    # test the function print_all_file_names
-    print_all_file_names("/Users/sluo/development/vim-plugin/vimassist/scripts")
+    pass
 
 
 

@@ -2,8 +2,8 @@
 import os
 import json
 
+# config_file_name = 'config.json'
 config_file_name = 'config.json'
-# config_file_name = 'config-test.json'
 
 def list_files_in_directory(directory:str)->list[str]:
     """
@@ -26,6 +26,22 @@ def list_files_in_directory(directory:str)->list[str]:
             file_list.append(full_path)
     return file_list
 
+def create_configurations(config_dir:str):
+    """
+    create an empty config file in the given directory.
+    :param config_dir: The path of the directory.
+    :return: None
+    """
+    # create a new config file
+    config_file_path = os.path.join(config_dir, config_file_name)
+    config_data = {
+        "assistant_id": "",
+        "thread_id": "",
+        "doc_dir": "",
+
+    }
+    with open(config_file_path, 'w') as file:
+        json.dump(config_data, file, indent=4)
 
 def read_configurations(config_file_path:str):
     with open(config_file_path, 'r') as file:
