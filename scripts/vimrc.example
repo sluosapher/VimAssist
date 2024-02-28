@@ -22,3 +22,8 @@ vnoremap <leader>u :call vimassist#UpdateDocs()<CR>
 nnoremap <leader>s :call vimassist#ShowDocs()<CR>
 vnoremap <leader>s :call vimassist#ShowDocs()<CR>
 
+" map shortcut <leader>s in both normal mode and visual mode to the ShowDocs
+" function
+nnoremap <leader>s :call vimassist#ShowDocs()<CR>
+vnoremap <leader>s :call vimassist#ShowDocs()<CR>
+

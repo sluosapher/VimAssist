@@ -118,6 +118,9 @@ After you prepared the knowledge base, you can launch the `:Updatedocs` command 
 ## Use the `:Ask` and `:Showdocs` commands
 After you use the `:Updatedocs` command, you can use the `:Ask` command (shortcut `\a`) to ask a question and insert the answer into the document. You can also use the `:Showdocs` command (shortcut `\s`) to display all the file names in the knowledge base, which are currently used by AI.
 
+## Use the `:Revise` command
+This command allows you to select a part of text (in visual mode) and ask the AI to revise it based on your specific request. You can use the shortcut `\r` to launch the `:Revise` command.
+
 # License
 Apache License 2.0
 
