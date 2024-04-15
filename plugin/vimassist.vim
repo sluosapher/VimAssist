@@ -13,7 +13,7 @@ let g:loaded_vimassist = 1
 
 " Exposes the plugin's functions for use as commands in Vim.
 command! Ask call vimassist#Ask() " Ask the user a question.
-command! Updatedocs call vimassit#UpdateDocs() " Update the plugin's knowledge base.
+command! Updatedocs call vimassist#UpdateDocs() " Update the plugin's knowledge base.
 command! Showdocs call vimassist#ShowDocs() " Display the plugin's document file names in its knowledge base.
 command! Revise call vimassist#ReviseContent('normal') " Revise the content
 
