@@ -27,12 +27,14 @@ brew install Python@3.12
  
 ## Step 2: Install VIM
 On Mac, you can install VIM using Homebrew:
+
 `
 brew install vim
 `
 
 ## Step 3 (**IMPORTANT**): Check the if vim supports python3
 You can check if your vim supports python3 by running the following command in vim:
+
 `
 :echo has('python3')
 `
@@ -41,6 +43,7 @@ If the result is 1, then your vim supports python3. If the result is 0, then you
 
 ## Step 4: check the linked python3 version, make sure you system installed the version that linked to vim
 You can check the linked python3 version by running the following command in OS terminal:
+
 `
 vim --version | grep python3
 `
@@ -50,15 +53,18 @@ Follow the instruction on its github page: https://github.com/junegunn/vim-plug
 
 ## Step 6: Install the VimAssist plugin
 Excute following commands in your terminal:
+
 `
-mkdir -p  ~/.vim/pack/vimassist/start/VimAssist
+mkdir -p  ~/.vim/pack/vimassist/start/VimAssist  
 git clone https://github.com/sluosapher/VimAssist.git ~/.vim/pack/vimassist/start/VimAssist
 `
+
 This will install the plugin source code into the folder `~/.vim/pack/vimassist/start/VimAssist`, which will be recognized by the plugin manager.
 
 ## Step 7: Install python dependencies
 You need to install the needed python packages.
 **IMPORTANT**: You must use the correct version pip to install the packages. For exmaple, if you are using Python3.12, you need to use pip3.12 to install the packages.
+
 `
 pip3.12 install -r ~/.vim/pack/vimassist/start/VimAssist/scripts/python_requirements.txt 
 `
@@ -66,25 +72,28 @@ pip3.12 install -r ~/.vim/pack/vimassist/start/VimAssist/scripts/python_requirem
 ## Step 8: Update the ~/.vimrc file
 First, make sure you update the `~/.vimrc` as instructed in step 5.
 Then, add the following lines to the `~/.vimrc` file, after the `call plug#begin()` line, and before the `call plug#end()` line:
+
 `
 Plug 'vimassist/VimAssist'
 `
+
 ## Step 9: Mapping the shortcuts
 Add the following lines to the `~/.vimrc` file, after the `call plug#end()` line:
+
 `
-" map shortcut <leader>a in both normal mode and visual mode to the Ask command of chatdocu plugin
-nnoremap <leader>a :call vimassist#Ask()<CR>
-vnoremap <leader>a :call vimassist#Ask()<CR>
+" map shortcut <leader>a in both normal mode and visual mode to the Ask command of chatdocu plugin  
+nnoremap <leader>a :call vimassist#Ask()<CR>  
+vnoremap <leader>a :call vimassist#Ask()<CR>  
 
-" map shortcut <leader>u in both normal mode and visual mode to the UpdateDocs
-" function
-nnoremap <leader>u :call vimassist#UpdateDocs()<CR>
-vnoremap <leader>u :call vimassist#UpdateDocs()<CR>
+" map shortcut <leader>u in both normal mode and visual mode to the UpdateDocs  
+" function  
+nnoremap <leader>u :call vimassist#UpdateDocs()<CR>  
+vnoremap <leader>u :call vimassist#UpdateDocs()<CR>  
 
-" map shortcut <leader>s in both normal mode and visual mode to the ShowDocs
-" function
-nnoremap <leader>s :call vimassist#ShowDocs()<CR>
-vnoremap <leader>s :call vimassist#ShowDocs()<CR>
+" map shortcut <leader>s in both normal mode and visual mode to the ShowDocs  
+" function  
+nnoremap <leader>s :call vimassist#ShowDocs()<CR>  
+vnoremap <leader>s :call vimassist#ShowDocs()<CR>  
 `
 
 I have provided a example of the configuration in the file `scripts/vimrc.example`, which you can use as a reference.
@@ -96,11 +105,13 @@ After you save the `~/.vimrc` file, you need to restart VIM to make the changes 
 
 ## Prepare the OPenAI API key
 You need to prepare the OpenAI API key to use the plugin. You can get the API key from the OpenAI website. After you get the API key, you need to save it as an environment variable `OPENAI_API_KEY`. You can do this by adding the following line to your `~/.bash_profile` file:
+
 `
 export OPENAI_API_KEY="your_api_key"
 `
 
 Don't forget to source the `~/.bash_profile` file after you make the change:
+
 `
 source ~/.bash_profile
 `
