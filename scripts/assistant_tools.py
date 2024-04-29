@@ -231,31 +231,52 @@ def update_files_of_assistant(assistant_id:str, file_id_list: list[str])->int:
         
     return 0
 
-# define a function to get all file names in the assistant, return a list of file names
-def get_all_file_names(assistant_id:str)->list[str]:
+# define a function to get all file names in the vector store, return a list of file names
+def get_all_file_names(vector_store_id:str)->list[str]:
     """
     Get all file names in the assistant.
 
     Args:
-        assistant_id (str): The ID of the assistant.
+        vector_store_id (str): The ID of the vector store.
 
     Returns:
         list[str]: A list of file names.
     """
-    # get the assistant
-    assistant = client.beta.assistants.retrieve(
-        assistant_id = assistant_id
-    )
-
-    # get the current file list
-    file_id_list = assistant.file_ids
-
-    # get the file names
+    # list all files in the vector store
+    try:
+        response = client.beta.vector_stores.files.list(
+            vector_store_id = vector_store_id
+        )
+    except Exception as e:
+        print(e)
+        return None
+    
     file_names = []
-    for file_id in file_id_list:
-        file = client.files.retrieve(file_id)
-        file_names.append(file.filename)
+    for file in response.data:
+        file_id = file.id
+        try:
+            file = client.files.retrieve(file_id)
+            file_names.append(file.filename)
+        except Exception as e:
+            print(e)
+            return None
+        
     return file_names
+
+    # assistant = client.beta.assistants.retrieve(
+    #     assistant_id = assistant_id
+    # )
+
+    
+    # # get the current file list
+    # file_id_list = assistant.file_ids
+
+    # # get the file names
+    # file_names = []
+    # for file_id in file_id_list:
+    #     file = client.files.retrieve(file_id)
+    #     file_names.append(file.filename)
+    # return file_names
 
 # define a function to create a thread object in openai.
 def create_thread()->str:
