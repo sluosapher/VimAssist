@@ -80,21 +80,20 @@ Plug 'vimassist/VimAssist'
 ## Step 9: Mapping the shortcuts
 Add the following lines to the `~/.vimrc` file, after the `call plug#end()` line:
 
-`
+
+```
 " map shortcut <leader>a in both normal mode and visual mode to the Ask command of chatdocu plugin  
 nnoremap <leader>a :call vimassist#Ask()<CR>  
 vnoremap <leader>a :call vimassist#Ask()<CR>  
 
-" map shortcut <leader>u in both normal mode and visual mode to the UpdateDocs  
-" function  
+" map shortcut <leader>u in both normal mode and visual mode to the UpdateDocs function  
 nnoremap <leader>u :call vimassist#UpdateDocs()<CR>  
 vnoremap <leader>u :call vimassist#UpdateDocs()<CR>  
 
-" map shortcut <leader>s in both normal mode and visual mode to the ShowDocs  
-" function  
+" map shortcut <leader>s in both normal mode and visual mode to the ShowDocs function  
 nnoremap <leader>s :call vimassist#ShowDocs()<CR>  
 vnoremap <leader>s :call vimassist#ShowDocs()<CR>  
-`
+```
 
 I have provided a example of the configuration in the file `scripts/vimrc.example`, which you can use as a reference.
 
