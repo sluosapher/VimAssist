@@ -37,6 +37,7 @@ def create_configurations(config_dir:str):
     config_data = {
         "assistant_id": "",
         "thread_id": "",
+        "vector_store_id": "",
         "doc_dir": "",
 
     }

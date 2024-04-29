@@ -7,13 +7,128 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAI_API_KEY)
 tools = [ 
     {"type": "code_interpreter"},
-    {"type": "retrieval"}
+    {"type": "file_search"}
 ]
 model = "gpt-4-turbo-preview"
+vector_store_name = "vimassist_vector_store" # name for the vector store used by vimassist agent
 
+def create_vector_store()->str:
+    try:
+        vector_store = client.beta.vector_stores.create(
+            name=vector_store_name
+        )
+    except Exception as e:
+        print(e)
+        return None
+    return vector_store.id
+
+def update_vector_store_files(vector_store_id:str, file_paths: list[str])->int:
+    """
+    Add a list of file objects to the vector store.
+
+    Args:
+        vector_store_id (str): The ID of the vector store to which the files will be added.
+        file_paths (list[str]): A list of file paths to be added to the vector store.
+
+    Returns:
+        int: 0 if successful, -1 if failed.
+    """
+    # delete current files in the vector store
+    try:
+        vector_store_files = client.beta.vector_stores.files.list(
+            vector_store_id = vector_store_id
+        )
+    except Exception as e:
+        print(e)
+        return -1
+    
+    old_file_ids = []
+    for file in vector_store_files.data:
+        old_file_ids.append(file.id)
+
+    print(f"To be deleted file ids: {old_file_ids}")
+
+    try:
+        # remove the old files from the vector store and delete them
+        for file_id in old_file_ids:
+            client.beta.vector_stores.files.delete(
+                vector_store_id=vector_store_id,
+                file_id=file_id
+            )
+            client.files.delete(file_id)
+    except Exception as e:
+        print(e)
+        return -1
+    
+    # # Ready the files for upload to OpenAI 
+    # file_streams = [open(path, "rb") for path in file_paths]
+    
+    # # Use the upload and poll SDK helper to upload the files, add them to the vector store,
+    # # and poll the status of the file batch for completion.
+    # file_batch = client.beta.vector_stores.file_batches.upload_and_poll(
+    #     vector_store_id=vector_store_id, files=file_streams
+    # )
+
+    # # print the status of the file batch every 0.1 seconds
+    # while file_batch.status != "completed":
+    #     print(file_batch.status)
+    #     print(file_batch.file_counts)
+    #     time.sleep(0.1)
+
+    # upload files to openai
+    new_file_ids = create_file_objects(file_paths)
+    if not new_file_ids:
+        return -1
+
+    # add the new files to the vector store
+    try:
+        for file_id in new_file_ids:
+            client.beta.vector_stores.files.create(
+                vector_store_id=vector_store_id,
+                file_id=file_id
+            )
+    except Exception as e:
+        print(e)
+        return -1
+
+    print(f"Added {len(new_file_ids)} files to the vector store.")
+
+    # list files in the vector store
+    try:
+        vector_store_files = client.beta.vector_stores.files.list(
+            vector_store_id = vector_store_id
+        )
+    except Exception as e:
+        print(e)
+        return -1
+    
+    new_file_ids = []
+    for file in vector_store_files.data:
+        new_file_ids.append(file.id)
+
+    print(f"New file ids: {new_file_ids}")
+
+    return 0
+
+
+def retrieve_vector_store(vector_store_id:str)->object:
+    try:
+        vector_store = client.beta.vector_stores.retrieve(
+            vector_store_id = vector_store_id
+        )
+
+        # check if the name of the vector store is the same as the expected name
+        if vector_store.name != vector_store_name:
+            print("The vector store name is not the expected name.")
+            return None
+        
+    except Exception as e:
+        print(e)
+        return None
+    return vector_store
 
 # define a function to create a new assistant, return the assistant id
-def create_assistant(assistant_name:str)->str:
+def create_assistant(assistant_name:str, vector_store_id:str)->str:
     try:
         assistant = client.beta.assistants.create(
             instructions="""
@@ -22,8 +137,9 @@ def create_assistant(assistant_name:str)->str:
                 You answer user's questions by searching from the attached documents, and organize the information into a well-written response. 
             """,
             name=assistant_name,
-            tools= tools,
             model= model,
+            tools= tools,
+            tool_resources={"file_search": {"vector_store_ids": [vector_store_id]}},
         )
     except Exception as e:
         print(e)
@@ -44,7 +160,7 @@ def retrieve_assistant(assistant_id:str)->object:
 
 
 # define a function to create a file object in openai, return a list of file IDs
-def create_file_objects(file_list: list[str])->list[str]:
+def create_file_objects(file_list: list[str])->list[str]: # TODO: delete this function once the new function is implemented
     """
     Create file objects for each file in the given file list.
 
@@ -299,61 +415,21 @@ def revise_content(
     return revised_text
 
 if __name__ == "__main__":
-    # test the revsie_content function
-    selected_text = ""
-    text_before_selection = """
-# Some highlights of my career experiences
+    # create a new vector store
+    # vector_store_id = create_vector_store()
+    vector_store_id = "vs_PFWnzlYL6BRNJCMMj7V3IKde"
 
-## Director of Cyber Machine Learing and AI
+    print(f"Vector store ID: {vector_store_id}")
 
-* cyber machine learning strategy: I worked with Cyber's senior leadership and other stakeholders to identify and prioritize opportunities for applying machine learning to address cyber security challenges. I have identified four major opportunities of applying ML in cyber: 1) soley relying on rule-based detectoins; 2)cyber operations still involve many manual operations which can be automated; 3) the detection pipeline is not stable enough 4) need upskill training Cyber's associates with ML knowledge and skills. Then I made a strategy to address these opportunities, which includes a security service part, a engineering improvement part, and a training part. I also made a 2-year roadmap to implement the strategy. At last, I presented the strategy to Cyber's senior leadership and got their buy-in.
+    # update the vector store with the files
+    # file_paths = [
+    #     "/Users/sluo/Documents/Digital Assets/50-59 Work/51 blogs/51.02 tik-tok divestiment bill/House Passes Bill to Force TikTok Sale From Chinese Owner or Ban the App - The New York Times.pdf",
+    #     "/Users/sluo/Documents/Digital Assets/50-59 Work/51 blogs/51.02 tik-tok divestiment bill/The TikTok bill passes.pdf",
+    # ]
+    file_paths = [
+        "/Users/sluo/Documents/Digital Assets/50-59 Work/51 blogs/51.03 human-centered-ML-in-Cyber/human-centered-machine-learning-in-cyber-blogpost.md",
+    ]
 
-* Cyber GenAI initiatives: I poineered in the Cyber GenAI initiatives, and prepared several key use cases with parters within Cyber. We did PoC for these use cases and got some promising results. GenAI initiatives include text-to-sql translation, automated cyber intel anlysis, anomaly detection in crowdstrike logs. These use cases are critical to Cyber's operation and can save a lot of manual work. I also made a roadmap for these use cases.
+    status = update_vector_store_files(vector_store_id, file_paths)
+    print(f"Update vector store status: {status}")
 
-* anomaly detection: I worked with Vendor (mixmode) to introuce their anomaly detection product to Cyber. I led the engineering, product, and architecture teams to integrate the product into Cyber's environment, and started the real-time anomaly detection in Cyber's environment. I also led the effort to build the in-house anomaly detection capability, and we have made some progress in this area.
-
-## Founder of chatdocu.ai
-
-Song Luo's experience with building ChatDocu.AI and ChatEssay.AI is characterized by hands-on involvement and transformative innovation. As the Founder and Developer from March 2023 to the present, Luo was responsible for transforming the concepts into fully operational products, beginning with architecture design through hands-on development, and deploying the products across both AWS and Azure platforms. ChatDocu.AI is an intelligent chatbot that answers questions without hallucination. ChatEssay.AI is an AI assistant designed to craft personalized college admission essays. These projects illustrate Luo's profound capability in leveraging advanced Generative AI technologies to address practical needs, displaying an impressive blend of technical acumen and innovative vision in AI application development.
-
-## Director of big data innovation at Tencent
-
-* Privacy computing product: I led the tencent security's big data team to develop a privacy computing product, called federated learning. This is the first privacy computing prodeuct in Tencent. This product played a key part in Tencent's privacy computing strategy. It not only supports Tencent's internal use cases, but also supports Tencent's external partners as one of Tencent Security's most innovative products.
-
-* Using the federated learning product, we developed use cases for tencent's anti-fraud and advertising business. It has made a significant impact on Tencent's business.
-"""
-    selected_text = """
-### What is the one thing you would want people to know about you?
-
-I am a passionate and innovative leader in AI and machine learning, and I want to make people's life secure, efficient, and happy.
-"""
-
-    text_after_selection = """
-### What is one of your proudest accomplishments from the past year?
-
-I transformed the concepts of ChatDocu.AI and ChatEssay.AI from ideas to fully operational products that can be readily used by the public.
-
-### What are you most passionate about in your current career path?
-
-I am passionate about leveraging AI and machine learning to address practical needs, particularly in the areas of cyber security and education.
-
-### What would your coworkers say about you?
-
-My coworkers would say that I am a passionate technical leader with a strong vision and a lot of great ideas.
-
-## My Future self
-
-### What kind of roles do you see yourself in moving forward?
-
-A technical leadership role in AI and machine learning, with a focus improve efficiency in people's work and life.
-
-### What have you done recently to grow professionally?
-
-I learned a lot on the journey of building ChatDocu.AI and ChatEssay.AI. From programming with LLM to deploying the products on AWS and Azure, and from understanding the business needs to designing the products, I have grown a lot professionally.
-"""
-
-    user_request = "can you enrich this part with more details?"
-
-    revised_text = revise_content(selected_text, text_before_selection, text_after_selection, user_request)
-    print(revised_text)
-    
