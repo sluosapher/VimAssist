@@ -215,16 +215,6 @@ def revise_content(
     return revised_text
     
 if __name__ == "__main__":
-    # test update docs
-    doc_dir = "/Users/sluo/Documents/Digital Assets/50-59 Work/51 blogs/51.02 tik-tok divestiment bill"
-    config_dir = "/Users/sluo/development/vim-plugin/vimassist/scripts"
-
-    status = update_docs(doc_dir, config_dir)
-    if status == 0:
-        print("Successfully updated the assistant with the documents.")
-    else:
-        print("Failed to update the assistant with the documents.")
-
-
+    pass
 
 

@@ -436,21 +436,4 @@ def revise_content(
     return revised_text
 
 if __name__ == "__main__":
-    # create a new vector store
-    # vector_store_id = create_vector_store()
-    vector_store_id = "vs_PFWnzlYL6BRNJCMMj7V3IKde"
-
-    print(f"Vector store ID: {vector_store_id}")
-
-    # update the vector store with the files
-    # file_paths = [
-    #     "/Users/sluo/Documents/Digital Assets/50-59 Work/51 blogs/51.02 tik-tok divestiment bill/House Passes Bill to Force TikTok Sale From Chinese Owner or Ban the App - The New York Times.pdf",
-    #     "/Users/sluo/Documents/Digital Assets/50-59 Work/51 blogs/51.02 tik-tok divestiment bill/The TikTok bill passes.pdf",
-    # ]
-    file_paths = [
-        "/Users/sluo/Documents/Digital Assets/50-59 Work/51 blogs/51.03 human-centered-ML-in-Cyber/human-centered-machine-learning-in-cyber-blogpost.md",
-    ]
-
-    status = update_vector_store_files(vector_store_id, file_paths)
-    print(f"Update vector store status: {status}")
-
+    pass
