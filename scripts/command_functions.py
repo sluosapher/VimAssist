@@ -26,10 +26,32 @@ def update_docs(doc_dir:str, config_dir:str)->int:
     config_data['doc_dir'] = doc_dir
     util.write_configurations(config_file_path, config_data)
 
+    # create a new vector store if not exist, otherwise retrieve the existing one
+    if ('vector_store_id' not in config_data) or (not config_data['vector_store_id']):
+        try:
+            vector_store_id = assistant_tools.create_vector_store()
+            # print(f"Created a new vector store with ID {vector_store_id}.")
+            config_data['vector_store_id'] = vector_store_id
+            util.write_configurations(config_file_path, config_data)
+        except Exception as e:
+            print(e)
+            return -1
+    else:
+        vector_store_id = config_data['vector_store_id']
+
+    # update files in the vector store
+    file_paths = util.list_files_in_directory(doc_dir)
+    print(f"Found {len(file_paths)} files in the working directory.")
+
+    status = assistant_tools.update_vector_store_files(vector_store_id, file_paths)
+    if status != 0:
+        print("Failed to update the vector store with the documents.")
+        return -1
+
     # create a new assistant if not exist
     if 'assistant_id' not in config_data or config_data['assistant_id'] == "":
         try:
-            assistant_id = assistant_tools.create_assistant("VimAssist")
+            assistant_id = assistant_tools.create_assistant("VimAssist", vector_store_id)
             # print(f"Created a new assistant with ID {assistant_id}.")
             config_data['assistant_id'] = assistant_id
             util.write_configurations(config_file_path, config_data)
@@ -43,7 +65,7 @@ def update_docs(doc_dir:str, config_dir:str)->int:
         if assistant is None:
             print(f"Failed to retrieve the assistant with ID {assistant_id}. Creating a new assistant.")
             # create a new assistant if failed to retrieve the old one
-            assistant_id = assistant_tools.create_assistant("VimAssist")
+            assistant_id = assistant_tools.create_assistant("VimAssist", vector_store_id)
             if assistant_id is None:
                 return -1
             print(f"Created a new assistant with ID {assistant_id}.")
@@ -53,7 +75,6 @@ def update_docs(doc_dir:str, config_dir:str)->int:
             util.write_configurations(config_file_path, config_data)
         else:
             pass
-
 
         assistant_id = config_data['assistant_id']
 
@@ -80,33 +101,37 @@ def update_docs(doc_dir:str, config_dir:str)->int:
             return -1
     else:
         thread_id = config_data['thread_id']
+    
+    return 0
 
-    # list all files in the working directory
-    file_list = util.list_files_in_directory(doc_dir)
-    # print(f"Found {len(file_list)} files in the working directory.")
+    # # list all files in the working directory
+    # file_list = util.list_files_in_directory(doc_dir)
+    # # print(f"Found {len(file_list)} files in the working directory.")
 
-    # create file objects in openai
-    file_id_list = assistant_tools.create_file_objects(file_list)
-    # print(f"Created {len(file_id_list)} file objects in openai.")
+    # # TODO: create a new funtion to upload all files to the vector store
 
-    # check if file_id_list is None or empty
-    if file_id_list is None or len(file_id_list) == 0:
-        return -1
-    else:
-        # update the assistant with the new file list
-        status = assistant_tools.update_files_of_assistant(assistant_id, file_id_list)
-        if status == 0:
-            # get all file names in the assistant, using function from assistant_tools
-            file_name_list = assistant_tools.get_all_file_names(assistant_id)
-            # print the file names to the console
-            print("Updated the assistant with the following documents:")
-            # print one file name per line
-            for file_name in file_name_list:
-                print(file_name)
-            return 0
-        else:
-            print("Failed to update the assistant with the documents.")
-            return -1
+    # # create file objects in openai
+    # file_id_list = assistant_tools.create_file_objects(file_list)
+    # # print(f"Created {len(file_id_list)} file objects in openai.")
+
+    # # check if file_id_list is None or empty
+    # if file_id_list is None or len(file_id_list) == 0:
+    #     return -1
+    # else:
+    #     # update the assistant with the new file list
+    #     status = assistant_tools.update_files_of_assistant(assistant_id, file_id_list)
+    #     if status == 0:
+    #         # get all file names in the assistant, using function from assistant_tools
+    #         file_name_list = assistant_tools.get_all_file_names(assistant_id)
+    #         # print the file names to the console
+    #         print("Updated the assistant with the following documents:")
+    #         # print one file name per line
+    #         for file_name in file_name_list:
+    #             print(file_name)
+    #         return 0
+    #     else:
+    #         print("Failed to update the assistant with the documents.")
+    #         return -1
         
 # define a function to send a message to the assistant, return answer. using function from assistant_tools
 def send_message_to_assistant(message:str, config_dir:str)->str:
@@ -154,9 +179,9 @@ def print_all_file_names(config_dir:str):
     # read doc dir from the config file
     doc_dir = util.read_configurations(config_file_path)['doc_dir']
     
-    # read assistant id from the config file
-    assistant_id = util.read_configurations(config_file_path)['assistant_id']
-    file_name_list = assistant_tools.get_all_file_names(assistant_id)
+    # read vector store id from the config file
+    vector_store_id = util.read_configurations(config_file_path)['vector_store_id']
+    file_name_list = assistant_tools.get_all_file_names(vector_store_id)
 
     # concantenate the doc dir to the file name
     file_name_list = [os.path.join(doc_dir, file_name) for file_name in file_name_list]
@@ -191,8 +216,5 @@ def revise_content(
     
 if __name__ == "__main__":
     pass
-
-
-
 
 
