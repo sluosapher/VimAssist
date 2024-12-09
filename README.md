@@ -19,10 +19,10 @@ The `:Showdocs` command is used to display all the file names in the knowledge b
 NOTE: I use Mac, and all the installation steps are verified on Mac. If you are using Windows or Linux, you may need to modify the installation steps.
 
 ## Step 1: Install Python3
-You can use brew to install Python3 of specific version. During my installation, I found the MacOS installed Python3.9 by default, but it did not work with VIM. Instead, I need to install Python3.12 to make the whole thing work. Again, this may only be the case for Mac.
+You can use brew to install Python3 of specific version. During my installation, I found the MacOS installed Python3.9 by default, but it did not work with VIM. Instead, I need to install Python3.13 to make the whole thing work. Again, this may only be the case for Mac.
 
 `
-brew install Python@3.12
+brew install Python@3.13
 `
  
 ## Step 2: Install VIM

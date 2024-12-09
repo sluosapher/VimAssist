@@ -9,7 +9,7 @@ tools = [
     {"type": "code_interpreter"},
     {"type": "file_search"}
 ]
-model = "gpt-4-turbo-preview"
+model = "gpt-4o"
 vector_store_name = "vimassist_vector_store" # name for the vector store used by vimassist agent
 
 def create_vector_store()->str:
@@ -380,25 +380,21 @@ def revise_content(
 
     # check if the user request is empty
     if user_request == "":
-        print("User request is empty.")
-        return ""
+        if selected_text != "":
+            user_request = selected_text
+        else:
+            print("I don't know what to do. Either the user request or the selected text should be provided.")
+            return ""
     
-    # check if the selected text is empty
-    if selected_text == "":
-        user_selectin = True
+    # # check if the selected text is empty
+    # if selected_text == "":
+    #     user_selection = True
 
     # Prepare the system prompt for openai chat completion
     system_msg = f"""
-    You are a text content editor with great logic and writing skills. You are revising the content based on the user's request.
-    Instructions:
-    * If the selected text is not empty, you only rewrite the selected text. Otherwise, you are adding new content based on the user's request.
-    * Write concise and clear sentences to fulfill the user's request. 
-    * Make your writing logically consistent with the context, by consdering the text before and after the selected text. 
-    * Make your writing following the original language style, and keep the tone consistent.
-    * Only return the revised text, do not include your own comments or explanations.
-    """
-
-    user_msg = f"""
+    You are a text content editor with great logic and writing skills. You are helping the user to build the content of an article.  
+    The current content of the artile is as follows, and the user may select a part of of the content as the focused content that needs your help.
+    
     The text before the selected text:
     {text_before_selection}
 
@@ -410,6 +406,18 @@ def revise_content(
 
     User's request is:
     {user_request}
+
+    Instructions:
+    1. Read the the whole article and the user's request carefully, get the understanding of the context and the user's request.
+    2. Fulfill the user's request using the selected text as the critical information, and the text before and after the selected text as the general context.
+    3. Write concise and clear sentences to fulfill the user's request. 
+    4. Make your writing logically consistent with the context, by consdering the text before and after the selected text. 
+    5. Make your writing following the original language style, and keep the tone consistent.
+    6. Only return the revised text, do not include your own comments or explanations.
+    """
+
+    user_msg = f"""
+    
 
     Your revision is:
     """
