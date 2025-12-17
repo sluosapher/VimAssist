@@ -21,14 +21,14 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
   },
   config = function()
     require("vimassist").setup({
-      -- Optional: Set your OpenAI API key here or use environment variable OPENAI_API_KEY
-      openai_api_key = vim.env.OPENAI_API_KEY or "your-api-key",
+      -- Your OpenAI API key. Required.
+      openai_api_key = "your-api-key",
 
-      -- Optional: Set OpenAI base URL or use environment variable OPENAI_BASE_URL (default: "https://api.openai.com/v1")
-      openai_base_url = vim.env.OPENAI_BASE_URL or "openai-compatible-url",
+      -- Optional: OpenAI base URL (defaults to "https://api.openai.com/v1")
+      openai_base_url = "https://api.openai.com/v1",
 
-      -- Optional: Customize model or use environment variable OPENAI_CHAT_MODEL (default: gpt-4o)
-      model = vim.env.OPENAI_CHAT_MODEL or "gpt-4o",
+      -- Optional: Customize model (defaults to "gpt-4o")
+      model = "gpt-4o",
 
       -- Optional: Customize generation parameters
       max_tokens = 2000,
@@ -46,9 +46,9 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 - Neovim >= 0.8.0
 - plenary.nvim
-- OpenAI API key (set via `OPENAI_API_KEY` environment variable or in config)
-- OpenAI Base URL (optional, defaults to "https://api.openai.com/v1", set via `OPENAI_BASE_URL` environment variable or in config)
-- OpenAI Chat Model (optional, defaults to "gpt-4o", set via `OPENAI_CHAT_MODEL` environment variable or in config)
+- OpenAI API key (set via plugin configuration `setup(opts).openai_api_key`)
+- OpenAI Base URL (optional, defaults to "https://api.openai.com/v1", set via `setup(opts).openai_base_url`)
+- OpenAI Chat Model (optional, defaults to "gpt-4o", set via `setup(opts).model`)
 
 ## Usage
 
@@ -87,7 +87,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
   },
   opts = {
     openai_base_url = "https://api.openai.com/v1",
-    openai_api_key = vim.env.OPENAI_API_KEY,
+    openai_api_key = "your-api-key",
     model = "gpt-4-turbo",  -- Use a specific model
     max_tokens = 3000,       -- Allow longer responses
     temperature = 0.5,       -- Make responses more focused
@@ -105,9 +105,9 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 Configure the plugin with the following options:
 
-- `openai_api_key` (string) - Your OpenAI API key
-- `openai_base_url` (string) - OpenAI base URL (default: `"https://api.openai.com/v1"`)
-- `model` (string) - Model to use or environment variable OPENAI_CHAT_MODEL (default: `"gpt-4o"`)
+- `openai_api_key` (string) - Your OpenAI API key. This is required.
+- `openai_base_url` (string) - OpenAI base URL. Defaults to `"https://api.openai.com/v1"` if not provided.
+- `model` (string) - Model to use. Defaults to `"gpt-4o"` if not provided.
 - `max_tokens` (number) - Maximum tokens in response (default: 2000)
 - `temperature` (number) - Randomness of output (default: 0.7)
 

@@ -4,5 +4,5 @@
 -- Load and initialize the plugin
 local vimassist = require("vimassist")
 
--- Default configuration
+-- Default configuration - environment variables will be read during setup
 vimassist.setup({})

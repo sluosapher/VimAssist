@@ -2,44 +2,18 @@ local M = {}
 
 -- Configuration
 M.config = {
-  openai_api_key = nil,
-  openai_base_url = nil,
-  model = nil,
+  openai_api_key = nil, -- Must be set via setup(opts)
+  openai_base_url = "https://api.openai.com/v1",
+  model = "gpt-4o",
   max_tokens = 2000,
   temperature = 0.7,
 }
 
 ---@param opts table
 function M.setup(opts)
-  -- Log initial values before merging
-  vim.notify("Initial model before setup: " .. tostring(M.config.model), vim.log.levels.INFO)
-  vim.notify("Initial openai_base_url before setup: " .. tostring(M.config.openai_base_url), vim.log.levels.INFO)
+    M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 
-  M.config = vim.tbl_deep_extend("force", M.config, opts or {})
-
-  -- Check for OpenAI API key
-  if not M.config.openai_api_key then
-    M.config.openai_api_key = vim.env.OPENAI_API_KEY
-    if not M.config.openai_api_key then
-      vim.notify("OpenAI API key not set. Please set OPENAI_API_KEY environment variable or pass it in config.", vim.log.levels.ERROR)
-    end
-  end
-
-  -- Check for OpenAI Base URL
-  if not M.config.openai_base_url then
-    vim.notify("Reading OPENAI_BASE_URL: " .. tostring(vim.env.OPENAI_BASE_URL), vim.log.levels.INFO)
-    M.config.openai_base_url = vim.env.OPENAI_BASE_URL or "https://api.openai.com/v1"
-    vim.notify("Set base_url to: " .. M.config.openai_base_url, vim.log.levels.INFO)
-  end
-
-  -- Check for OpenAI Chat Model
-  if not M.config.model then
-    vim.notify("Reading OPENAI_CHAT_MODEL: " .. tostring(vim.env.OPENAI_CHAT_MODEL), vim.log.levels.INFO)
-    M.config.model = vim.env.OPENAI_CHAT_MODEL or "gpt-4o"
-    vim.notify("Set model to: " .. M.config.model, vim.log.levels.INFO)
-  else
-    vim.notify("Model already set: " .. M.config.model, vim.log.levels.INFO)
-  end
+  -- No environment variable checking here. All config values must be passed via opts.
 
   -- Create commands
   vim.api.nvim_create_user_command("VimAssistAsk", function()
