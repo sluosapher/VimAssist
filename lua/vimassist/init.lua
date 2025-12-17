@@ -104,6 +104,24 @@ local function get_text_after_cursor()
   return table.concat(lines, "\n")
 end
 
+---Get the line number of the end of the current paragraph
+---@return number
+local function get_end_of_paragraph()
+  local current_line = vim.fn.line(".") - 1
+  local total_lines = vim.api.nvim_buf_line_count(0)
+  local lines = vim.api.nvim_buf_get_lines(0, current_line, total_lines, false)
+
+  -- Find the next empty line or end of buffer
+  for i = 1, #lines do
+    if lines[i] == "" then
+      return current_line + i - 1
+    end
+  end
+
+  -- Return end of buffer if no empty line found
+  return total_lines
+end
+
 local openai = require("vimassist.openai")
 
 ---@param messages table
@@ -175,13 +193,20 @@ function M.ask()
 
   local answer = result.choices[1].message.content
   local lines = vim.split(answer, "\n")
-  local cursor = vim.api.nvim_win_get_cursor(0)
 
-  -- Insert answer at cursor position
-  vim.api.nvim_buf_set_lines(0, cursor[1], cursor[1], false, lines)
+  -- Calculate insertion point (end of current paragraph)
+  local end_line = get_end_of_paragraph()
 
-  -- Move cursor to end of inserted text
-  vim.api.nvim_win_set_cursor(0, { cursor[1] + #lines, 0 })
+  -- Insert answer after the paragraph
+  vim.api.nvim_buf_set_lines(0, end_line, end_line, false, lines)
+
+  -- Select the inserted text
+  local start_line = end_line + 1
+  local end_line_num = end_line + #lines
+
+  -- Enter visual mode and select the inserted text
+  vim.fn.setpos("'<", {0, start_line, 1, 0})
+  vim.fn.setpos("'>", {0, end_line_num, #lines[#lines] or 0, 0})
 
   vim.notify("Answer inserted", vim.log.levels.INFO)
 end
@@ -201,8 +226,8 @@ function M.revise()
 
   local request = vim.fn.input("Revision request: ")
   if request == "" then
-    vim.notify("Revision request cannot be empty", vim.log.levels.WARN)
-    return
+    -- Use selected text as request if user input is empty
+    request = selected_text
   end
 
   local text_before = get_text_before_cursor()
@@ -250,6 +275,13 @@ function M.revise()
 
   -- Replace selection with revised text
   vim.api.nvim_buf_set_lines(0, start_pos[2] - 1, end_pos[2], false, lines)
+
+  -- Select the revised text
+  local start_line = start_pos[2]
+  local end_line = start_pos[2] + #lines - 1
+
+  vim.fn.setpos("'<", {0, start_line, 1, 0})
+  vim.fn.setpos("'>", {0, end_line, #lines[#lines] or 0, 0})
 
   vim.notify("Text revised", vim.log.levels.INFO)
 end
