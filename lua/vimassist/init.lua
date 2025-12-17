@@ -268,20 +268,18 @@ function M.revise()
   local revised_text = result.choices[1].message.content
   local lines = vim.split(revised_text, "\n")
 
-  -- Get selection boundaries
-  local start_pos = vim.fn.getpos("'<")
-  local end_pos = vim.fn.getpos("'>")
-  local end_line = end_pos[2]
+  -- Calculate insertion point (end of current paragraph)
+  local end_line = get_end_of_paragraph()
 
-  -- Replace selection with revised text
-  vim.api.nvim_buf_set_lines(0, start_pos[2] - 1, end_pos[2], false, lines)
+  -- Insert revised text after the paragraph
+  vim.api.nvim_buf_set_lines(0, end_line, end_line, false, lines)
 
-  -- Select the revised text
-  local start_line = start_pos[2]
-  local end_line = start_pos[2] + #lines - 1
+  -- Select the inserted text
+  local start_line = end_line + 1
+  local end_line_num = end_line + #lines
 
   vim.fn.setpos("'<", {0, start_line, 1, 0})
-  vim.fn.setpos("'>", {0, end_line, #lines[#lines] or 0, 0})
+  vim.fn.setpos("'>", {0, end_line_num, #lines[#lines] or 0, 0})
 
   vim.notify("Text revised", vim.log.levels.INFO)
 end
