@@ -76,6 +76,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 ```lua
 {
   "sluosapher/VimAssist",
+  lazy = false,
   dependencies = {
     "nvim-lua/plenary.nvim",
   },
