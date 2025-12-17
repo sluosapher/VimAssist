@@ -3,12 +3,13 @@ local M = {}
 ---Make a synchronous request to OpenAI API using plenary.nvim
 ---@param messages table
 ---@param api_key string
+---@param base_url string
 ---@param model string
 ---@param max_tokens number
 ---@param temperature number
 ---@return number status_code
 ---@return table|nil result
-function M.openai_request(messages, api_key, model, max_tokens, temperature)
+function M.openai_request(messages, api_key, base_url, model, max_tokens, temperature)
   local curl = require("plenary.curl")
   local job = require("plenary.job")
 
@@ -24,7 +25,14 @@ function M.openai_request(messages, api_key, model, max_tokens, temperature)
   local result = nil
   local status_code = 0
 
-  local response = curl.post("https://api.openai.com/v1/chat/completions", {
+  -- Construct the full URL from base URL and endpoint
+  local url = base_url .. "/chat/completions"
+
+  -- Debug output
+  vim.notify("OpenAI URL: " .. url, vim.log.levels.INFO)
+  vim.notify("OpenAI Model: " .. model, vim.log.levels.INFO)
+
+  local response = curl.post(url, {
     headers = {
       ["Content-Type"] = "application/json",
       ["Authorization"] = "Bearer " .. api_key,

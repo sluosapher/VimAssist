@@ -3,13 +3,18 @@ local M = {}
 -- Configuration
 M.config = {
   openai_api_key = nil,
-  model = "gpt-4o",
+  openai_base_url = nil,
+  model = nil,
   max_tokens = 2000,
   temperature = 0.7,
 }
 
 ---@param opts table
 function M.setup(opts)
+  -- Log initial values before merging
+  vim.notify("Initial model before setup: " .. tostring(M.config.model), vim.log.levels.INFO)
+  vim.notify("Initial openai_base_url before setup: " .. tostring(M.config.openai_base_url), vim.log.levels.INFO)
+
   M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 
   -- Check for OpenAI API key
@@ -18,6 +23,22 @@ function M.setup(opts)
     if not M.config.openai_api_key then
       vim.notify("OpenAI API key not set. Please set OPENAI_API_KEY environment variable or pass it in config.", vim.log.levels.ERROR)
     end
+  end
+
+  -- Check for OpenAI Base URL
+  if not M.config.openai_base_url then
+    vim.notify("Reading OPENAI_BASE_URL: " .. tostring(vim.env.OPENAI_BASE_URL), vim.log.levels.INFO)
+    M.config.openai_base_url = vim.env.OPENAI_BASE_URL or "https://api.openai.com/v1"
+    vim.notify("Set base_url to: " .. M.config.openai_base_url, vim.log.levels.INFO)
+  end
+
+  -- Check for OpenAI Chat Model
+  if not M.config.model then
+    vim.notify("Reading OPENAI_CHAT_MODEL: " .. tostring(vim.env.OPENAI_CHAT_MODEL), vim.log.levels.INFO)
+    M.config.model = vim.env.OPENAI_CHAT_MODEL or "gpt-4o"
+    vim.notify("Set model to: " .. M.config.model, vim.log.levels.INFO)
+  else
+    vim.notify("Model already set: " .. M.config.model, vim.log.levels.INFO)
   end
 
   -- Create commands
@@ -181,6 +202,7 @@ function M.ask()
   local status, result = openai.openai_request(
     messages,
     M.config.openai_api_key,
+    M.config.openai_base_url,
     M.config.model,
     M.config.max_tokens,
     M.config.temperature
@@ -255,6 +277,7 @@ function M.revise()
   local status, result = openai.openai_request(
     messages,
     M.config.openai_api_key,
+    M.config.openai_base_url,
     M.config.model,
     M.config.max_tokens,
     M.config.temperature
@@ -268,18 +291,20 @@ function M.revise()
   local revised_text = result.choices[1].message.content
   local lines = vim.split(revised_text, "\n")
 
-  -- Calculate insertion point (end of current paragraph)
-  local end_line = get_end_of_paragraph()
+  -- Get selection boundaries
+  local start_pos = vim.fn.getpos("'<")
+  local end_pos = vim.fn.getpos("'>")
+  local end_line = end_pos[2]
 
-  -- Insert revised text after the paragraph
-  vim.api.nvim_buf_set_lines(0, end_line, end_line, false, lines)
+  -- Replace selection with revised text
+  vim.api.nvim_buf_set_lines(0, start_pos[2] - 1, end_pos[2], false, lines)
 
-  -- Select the inserted text
-  local start_line = end_line + 1
-  local end_line_num = end_line + #lines
+  -- Select the revised text
+  local start_line = start_pos[2]
+  local end_line = start_pos[2] + #lines - 1
 
   vim.fn.setpos("'<", {0, start_line, 1, 0})
-  vim.fn.setpos("'>", {0, end_line_num, #lines[#lines] or 0, 0})
+  vim.fn.setpos("'>", {0, end_line, #lines[#lines] or 0, 0})
 
   vim.notify("Text revised", vim.log.levels.INFO)
 end
