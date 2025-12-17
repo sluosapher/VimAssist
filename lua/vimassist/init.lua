@@ -27,7 +27,7 @@ function M.setup(opts)
 
   vim.api.nvim_create_user_command("VimAssistRevise", function()
     M.revise()
-  end, { desc = "Revise selected text with context" })
+  end, { range = true, desc = "Revise selected text with context" })
 
   -- Set up keymaps (optional - users can customize in their config)
   vim.keymap.set("n", "<leader>a", ":VimAssistAsk<CR>", { desc = "VimAssist: Ask question" })
